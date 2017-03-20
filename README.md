@@ -11,6 +11,7 @@ Opinion Mining and Sentiment Polarity on Twitter and Correlation Between Events 
         * flume                     --flume codes and configuration if any
     * scripts                       --scripts python, shell etc
     * conf                          --hadoop configuration file
+  
 
 Please do no add build artifacts or IDE specific .xml files. only hadoop
 configuration .xml files can be uploaded
