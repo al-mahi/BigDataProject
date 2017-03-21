@@ -171,12 +171,12 @@ public class cleanInput {
 					// remove hash
 					wekafileredword = cleanWithWeka(tokens[i].substring(1, tokens[i].length()));
 					if (!wekafileredword.equals("-1"))
-						cleanMessage += wekafileredword + " ";
+						cleanMessage += wekafileredword + "_";
 				} else
 				{
 					wekafileredword = cleanWithWeka(tokens[i]);
 					if (!wekafileredword.equals("-1"))
-						cleanMessage += tokens[i] + " ";
+						cleanMessage += tokens[i] + "_";
 				}
 			}
 		}
