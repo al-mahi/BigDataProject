@@ -2,6 +2,7 @@ package wekaproject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,14 +12,48 @@ import java.util.Locale;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+
+import weka.core.Instances;
+import weka.core.Stopwords;
+
 import org.json.simple.parser.JSONParser;
 
 public class cleanInput {
 	public static void main(String[] args) throws IOException
 	{
+		String atffPath = "C:\\Users\\gauth\\Desktop\\output.txt";
+		String jsonPath = "C:\\Users\\gauth\\Desktop\\twittwer_data";
+		DataCleaner(atffPath, jsonPath);
+		implementWeka(atffPath);
+	}
+
+	private static void implementWeka(String atffPath) throws IOException
+	{
+		BufferedReader inputReader = null;
+
 		try
 		{
-			PrintWriter writer = new PrintWriter("C:\\Users\\gauth\\Desktop\\output.txt", "UTF-8");
+			inputReader = new BufferedReader(new FileReader(atffPath));
+		} catch (FileNotFoundException ex)
+		{
+			System.err.println("File not found: " + atffPath);
+		}
+		try
+		{
+			Instances data = new Instances(inputReader);
+			data.setClassIndex(data.numAttributes() - 1);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	private static void DataCleaner(String atffPath, String jsonPath)
+	{
+		try
+		{
+			PrintWriter writer = new PrintWriter(atffPath, "UTF-8");
 			writer.println("@RELATION twitter");
 			writer.println();
 			writer.println();
@@ -29,7 +64,7 @@ public class cleanInput {
 			writer.println();
 			writer.println("@DATA");
 			writer.println();
-			File dirr = new File("C:\\Users\\gauth\\Desktop\\twittwer_data");
+			File dirr = new File(jsonPath);
 			File[] files = dirr.listFiles();
 			for (File file : files)
 			{
@@ -46,8 +81,9 @@ public class cleanInput {
 					String id;
 					Date date;
 					int badRecordCounter = 0;
-					SimpleDateFormat twitterDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
-					SimpleDateFormat wekatimestampformat =new SimpleDateFormat("dd-MM-yyyy HH:mm");
+					SimpleDateFormat twitterDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy",
+							Locale.ENGLISH);
+					SimpleDateFormat wekatimestampformat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 					while ((line = bufferedReader.readLine()) != null)
 					{
 						try
@@ -56,14 +92,10 @@ public class cleanInput {
 							jObj = (JSONObject) obj;
 							id = jObj.get("id_str").toString();
 							timestamp = jObj.get("created_at").toString();
-							date=twitterDateFormat.parse(timestamp);
-							timestamp=wekatimestampformat.format(date);
+							date = twitterDateFormat.parse(timestamp);
+							timestamp = wekatimestampformat.format(date);
 							message = jObj.get("text").toString();
 							message = tokenizeandclean(message);
-//							System.out.println(id);
-//							System.out.println(timestamp);
-//							System.out.println(message);
-//							System.out.println("****************");
 							writer.println(id + "," + timestamp + "," + message);
 						} catch (ParseException ex)
 						{
@@ -89,18 +121,19 @@ public class cleanInput {
 
 	private static String tokenizeandclean(String message)
 	{
+		String wekafileredword;
 		// takes care of escape characters in the tweets
 		String[] tokens = message.split("\\W+");
 		String cleanMessage = "";
 		for (int i = 0; i < tokens.length; i++)
 		{
-			if(tokens[i].length() == 0)
+			if (tokens[i].length() == 0)
 			{
 				continue;
 			}
 			// taking care of escape characters in the tweet
 			// tokens[i]=tokens[i].replace("\\", "");
-			// removing user names			
+			// removing user names
 			if (tokens[i].contains("@"))
 			{
 				// do nothing we do not need them.
@@ -120,6 +153,11 @@ public class cleanInput {
 			{
 				// do nothing
 			}
+			//if it is not English alphabet discard it
+			else if (!tokens[i].matches("[a-zA-Z]+\\.?"))
+			{
+				// do nothing
+			}
 			// these are the clean tokens need to keep them
 			else
 			{
@@ -128,11 +166,29 @@ public class cleanInput {
 				if (tokens[i].substring(0, 1).equals("#"))
 				{
 					// remove hash
-					cleanMessage += tokens[i].substring(1, tokens[i].length()) + " ";
+					wekafileredword = cleanWithWeka(tokens[i].substring(1, tokens[i].length()));
+					if (!wekafileredword.equals("-1"))
+						cleanMessage += wekafileredword + " ";
 				} else
-					cleanMessage += tokens[i] + " ";
+				{
+					wekafileredword = cleanWithWeka(tokens[i]);
+					if (!wekafileredword.equals("-1"))
+						cleanMessage += tokens[i] + " ";
+				}
 			}
 		}
 		return cleanMessage;
+	}
+
+	private static String cleanWithWeka(String word)
+	{
+		String cleansedword = word;
+		Stopwords stpwrd = new Stopwords();
+		// removing stop words
+		if (stpwrd.is(word))
+		{
+			cleansedword = "-1";
+		}
+		return cleansedword;
 	}
 }
