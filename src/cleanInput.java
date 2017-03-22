@@ -94,7 +94,7 @@ public class cleanInput {
 							timestamp = wekatimestampformat.format(date);
 							message = jObj.get("text").toString();
 							message = tokenizeandclean(message);
-							writer.println(id + "," + timestamp + "," + message);
+							writer.println(id + "," + timestamp + ",\"" + message + "\"");
 						} catch (ParseException ex)
 						{
 							badRecordCounter++;
@@ -171,12 +171,12 @@ public class cleanInput {
 					// remove hash
 					wekafileredword = cleanWithWeka(tokens[i].substring(1, tokens[i].length()));
 					if (!wekafileredword.equals("-1"))
-						cleanMessage += wekafileredword + "_";
+						cleanMessage += wekafileredword + " ";
 				} else
 				{
 					wekafileredword = cleanWithWeka(tokens[i]);
 					if (!wekafileredword.equals("-1"))
-						cleanMessage += tokens[i] + "_";
+						cleanMessage += tokens[i] + " ";
 				}
 			}
 		}
