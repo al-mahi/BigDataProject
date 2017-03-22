@@ -19,7 +19,7 @@ import org.json.simple.parser.JSONParser;
 public class cleanInput {
 	public static void main(String[] args) throws IOException
 	{
-		String atffPath = "output"+ File.separator +"output.txt";
+		String atffPath = "output"+ File.separator +"output.arff";
 		String jsonPath = "twittwer_data";
 		DataCleaner(atffPath, jsonPath);
 		implementWeka(atffPath);
