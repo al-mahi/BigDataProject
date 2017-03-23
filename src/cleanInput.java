@@ -1,6 +1,15 @@
+package wekaproject;
+/**
+*<h1>clean input!</h1>
+*@author Gautham
+* This is a java class to takes JSON folder as input
+* it will read all the json files in it and iterate it
+* and convert it to an arff format used by the WEKA 
+* <p>
+* <b>Note:</b> some of the code in process has been commented.
+* it is not redundant code. */
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,41 +20,77 @@ import java.util.Locale;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import weka.core.Instances;
 import weka.core.Stopwords;
 
 import org.json.simple.parser.JSONParser;
 
 public class cleanInput {
+	/**
+	 * The main method will take two urls as input and send it to 
+	 * a method which will clean the data and convert into the arff format
+	   *@param  listOfargs it will take a list of words as arguments
+	   * @return void This method returns nothing
+	   */
 	public static void main(String[] args) throws IOException
 	{
 		String atffPath = "output"+ File.separator +"output.arff";
 		String jsonPath = "twittwer_data";
 		DataCleaner(atffPath, jsonPath);
-		implementWeka(atffPath);
+		//implementWeka(atffPath);
+//		String ssthInitialisationAndText[] = {"sentidata", "C:\\Users\\gauth\\workspace\\wekaproject\\src\\input",  "explain"};
+//		SentiStrength.main(ssthInitialisationAndText); 
 	}
 
-	private static void implementWeka(String atffPath) throws IOException
-	{
-		BufferedReader inputReader = null;
-
-		try
-		{
-			inputReader = new BufferedReader(new FileReader(atffPath));
-		} catch (FileNotFoundException ex)
-		{
-			System.err.println("File not found: " + atffPath);
-		}
-		try
-		{
-			Instances data = new Instances(inputReader);
-			data.setClassIndex(data.numAttributes() - 1);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-	}
+//	private static void implementWeka(String atffPath) throws IOException
+//	{
+//		BufferedReader inputReader = null;
+//
+//		try
+//		{
+//			inputReader = new BufferedReader(new FileReader(atffPath));
+//		} catch (FileNotFoundException ex)
+//		{
+//			System.err.println("File not found: " + atffPath);
+//		}
+//		try
+//		{
+//			Instances data = new Instances(inputReader);
+//			data.setClassIndex(data.numAttributes() - 1);
+//			Instances[][] split = new Instances[2][10];
+//
+//			for (int i = 0; i < 10; i++)
+//			{
+//				split[0][i] = data.trainCV(10, i);
+//				split[1][i] = data.testCV(10, i);
+//			}
+//			Instances[] trainingSplits = split[0];
+//			Instances[] testingSplits = split[1];
+////			Classifier model=new NaiveBayes();
+////			FastVector predictions = new FastVector();
+////			for (int i = 0; i < trainingSplits.length; i++) {
+////				Evaluation validation = classify(model, trainingSplits[i], testingSplits[i]);
+////				 
+////				predictions.appendElements(validation.predictions());
+//// 
+////				System.out.println(model.toString());
+////			}
+//			
+//		} catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
+//
+//	}
+	/**
+	   * This method will clean the output. 
+	   * most of pre prosessing is done before
+	   * @param arffPath This is the path that the output should be written to.
+	   * This is the input to the classifier.
+	   * @param jsonPath this is the path where the json input resides
+	   * @return Nothing.
+	   * @exception Exception to handle all kinds of exceptions.
+	   * @see IOException
+	   */
 
 	private static void DataCleaner(String atffPath, String jsonPath)
 	{
@@ -68,6 +113,7 @@ public class cleanInput {
 			{
 				if (file.isFile())
 				{
+					//parse the json file using json object
 					FileReader fileReader = new FileReader(file);
 					BufferedReader bufferedReader = new BufferedReader(fileReader);
 					String line;
@@ -81,11 +127,12 @@ public class cleanInput {
 					int badRecordCounter = 0;
 					SimpleDateFormat twitterDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy",
 							Locale.ENGLISH);
-					SimpleDateFormat wekatimestampformat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+					SimpleDateFormat wekatimestampformat = new SimpleDateFormat("dd-MM-yyyy-HH:mm");
 					while ((line = bufferedReader.readLine()) != null)
 					{
 						try
 						{
+							//retrieve appropriate key values from json
 							obj = parser.parse(line);
 							jObj = (JSONObject) obj;
 							id = jObj.get("id_str").toString();
@@ -93,8 +140,10 @@ public class cleanInput {
 							date = twitterDateFormat.parse(timestamp);
 							timestamp = wekatimestampformat.format(date);
 							message = jObj.get("text").toString();
+							//send clean the message
 							message = tokenizeandclean(message);
-							writer.println(id + "," + timestamp + ",\"" + message + "\"");
+							//write output make sure that the string are in quotes
+							writer.println(id + "," + timestamp + ",\'" + message+"\'");
 						} catch (ParseException ex)
 						{
 							badRecordCounter++;
@@ -121,7 +170,11 @@ public class cleanInput {
 		}
 
 	}
-
+/**
+ *This method will tokenize the tweet words and clean it for the classifier
+ * @param message A message is one single tweet
+ * @return String of cleaned tweet
+ */
 	private static String tokenizeandclean(String message)
 	{
 		String wekafileredword;
@@ -156,7 +209,7 @@ public class cleanInput {
 			{
 				// do nothing
 			}
-			//if it is not English alphabet discard it
+			// if it is not English alphabet discard it
 			else if (!tokens[i].matches("[a-zA-Z]+\\.?"))
 			{
 				// do nothing
@@ -171,20 +224,24 @@ public class cleanInput {
 					// remove hash
 					wekafileredword = cleanWithWeka(tokens[i].substring(1, tokens[i].length()));
 					if (!wekafileredword.equals("-1"))
-						cleanMessage += wekafileredword + " ";
+						cleanMessage += wekafileredword.toLowerCase() + " ";
 				} else
 				{
 					wekafileredword = cleanWithWeka(tokens[i]);
 					if (!wekafileredword.equals("-1"))
-						cleanMessage += tokens[i] + " ";
+						cleanMessage += tokens[i].toLowerCase() + " ";
 				}
 			}
 		}
 		return cleanMessage;
 	}
-
+ /**
+  * This method is used to remove the stop words with weka
+  * @param word this is a single word in the tweet
+  * @return if the word is not a stop word we return it else we return -1
+  */
 	private static String cleanWithWeka(String word)
-	{
+	{		
 		String cleansedword = word;
 		Stopwords stpwrd = new Stopwords();
 		// removing stop words
