@@ -33,8 +33,8 @@ public class cleanInput {
 	   */
 	public static void main(String[] args) throws IOException
 	{
-		String atffPath = "C:\\Users\\gauth\\Desktop\\output.txt";
-		String jsonPath = "C:\\Users\\gauth\\Desktop\\twittwer_data";
+		String atffPath = "output"+ File.separator +"output.arff";
+		String jsonPath = "twittwer_data";
 		DataCleaner(atffPath, jsonPath);
 		//implementWeka(atffPath);
 //		String ssthInitialisationAndText[] = {"sentidata", "C:\\Users\\gauth\\workspace\\wekaproject\\src\\input",  "explain"};
@@ -96,8 +96,7 @@ public class cleanInput {
 	{
 		try
 		{
-			//start writing arff file
-			PrintWriter writer = new PrintWriter(atffPath, "UTF-8");
+			PrintWriter writer = new PrintWriter(atffPath);
 			writer.println("@RELATION twitter");
 			writer.println();
 			writer.println();
@@ -149,12 +148,17 @@ public class cleanInput {
 						{
 							badRecordCounter++;
 						}
+						catch (NullPointerException nex)
+						{
+							badRecordCounter++;
+							System.err.println(nex.getMessage());
+						}
 
 					}
 
 					if (badRecordCounter != 0)
 					{
-						System.out.println(badRecordCounter);
+						System.out.println("Bad record count " + badRecordCounter + " for file " + file.getPath());
 					}
 					fileReader.close();
 				}
