@@ -1,0 +1,6 @@
+// This command run in the foreground
+
+flume-ng agent -c $FLUME_HOME/conf -f twitter.conf -n TwitterAgent
+
+// This command run in the background
+nohup flume-ng agent -c $FLUME_HOME/conf -f twitter.conf -n TwitterAgent &
