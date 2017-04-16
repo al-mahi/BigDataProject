@@ -85,12 +85,25 @@ in figure 5
 
 ![Alt text](images/weka6.jpg "figure 6")
 
-###### Training the Data:
+##### Training the Data:
 In spark we first create a data frame with 'labels' and 'tweets' in the next step we use tokenizer to convert it into 
 tokens. We then remove the stop words and then we apply an Ngram feature and transform the data using ngram feature 
 with n=1 or unigram. Then we do a random split of 0.4 and 0.6 and use one set for training the classifier and other 
 for testing it. Next we implement the naive bayes classifier with the training and the testing splits of the data.
 Alternatively we also implement a TFIDF model with the same approach and naive bayes using word to vector conversion.
+
+##### Analysis of the data
+We have taken 3000 features and we trained on 160000 tweets. But however only 40000 could be used because if we give all the training data  we are running out of memory. After we have trained it using the training data we have feeded the testing data which is the flume data we have collected from  March 8 2017 to April 14, 2017. 
+
+After doing this and running the classifier we get the following two tables
+
+##### table 1
+
+![Alt text](images/report_tab1.png "figure 6")
+
+##### table 2
+
+![Alt text](images/report_tab2.png "figure 6")
 
 ##### Folder Structure
 * BigDataProject
