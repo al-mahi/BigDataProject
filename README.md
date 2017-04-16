@@ -33,7 +33,11 @@ understands. The conversion code is github.
 Here is the step by step description of how to reproduce the work in weka side.
 Weka GUI can be started from the command line as following
 
+##### figure 1
+
 ![Alt text](images/weka1.jpg "figure 1")
+
+##### figure 2
 
 ![Alt text](images/weka2.jpg "figure 2")
 
@@ -42,6 +46,8 @@ and place different modules of sentiments analysis system. Modules can be picked
 as following figure. The first module is ARFF loader Illustration 1 which has
 option to browse to the local twitter data file and load it to weka
 
+##### figure 3
+
 ![Alt text](images/weka3.jpg "figure 3")
 
 In Fig3 we have added Substring labeler which is used to label raw data to classes
@@ -49,6 +55,8 @@ here pos and neg based on some bag of positive and negative words. We have sampl
 300000 of such words from [1] http://www.cs.uic.edu/~liub/FBS/sentimentanalysis.
 html. We also external lexicon which has been suggested in the work we are
 reproducing which is emotonics smileys. Fig4 shows the method to add label manually
+
+##### figure 4
 
 ![Alt text](images/weka4.jpg "figure 4")
 
@@ -69,9 +77,20 @@ The prediction data has been saved using Arff saver Module. We have collected th
 prediction data . We have plotted the sentiment data time series using python
 in figure 5
 
+##### figure 5
+
 ![Alt text](images/weka5.jpg "figure 5")
 
+##### figure 6
+
 ![Alt text](images/weka6.jpg "figure 6")
+
+###### Training the Data:
+In spark we first create a data frame with 'labels' and 'tweets' in the next step we use tokenizer to convert it into 
+tokens. We then remove the stop words and then we apply an Ngram feature and transform the data using ngram feature 
+with n=1 or unigram. Then we do a random split of 0.4 and 0.6 and use one set for training the classifier and other 
+for testing it. Next we implement the naive bayes classifier with the training and the testing splits of the data.
+Alternatively we also implement a TFIDF model with the same approach and naive bayes using word to vector conversion.
 
 ##### Folder Structure
 * BigDataProject
