@@ -82,7 +82,8 @@ if __name__ == '__main__':
 
     uningramData = uningramDataFrame.select("label", "ngrams")
 
-    hashingTF = HashingTF(inputCol="ngrams", outputCol="rawFeatures", numFeatures=20)
+    #hashingTF = HashingTF(inputCol="ngrams", outputCol="rawFeatures", numFeatures=20)
+	
     featurizedData = hashingTF.transform(uningramData)
     # alternatively, CountVectorizer can also be used to get term frequency vectors
 
