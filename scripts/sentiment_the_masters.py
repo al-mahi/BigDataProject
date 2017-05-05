@@ -33,6 +33,7 @@ if __name__ == '__main__':
                 return 0.0, data['text'], data["timestamp_ms"]
 
     text2 = rdd.map(extract_time_and_tweet)
+    text2.count()
 
     rawLabelTweetDataFrame = spark.createDataFrame(text2, ["label", "tweets", "time_stamp_ms"])
 
@@ -60,10 +61,11 @@ if __name__ == '__main__':
     model = NaiveBayesModel.load("hdfs://localhost:9000/model_naive_bayes")
     predictions = model.transform(rescaledData)
     predictions.show()
+    print(type(predictions))
 
     res = predictions.toPandas()
+    res.to_pickle("prediction_panda_df.pck")
     print(predictions.count())
 
-    plt.plot(res.time_stamp_ms, res.prediction)
-    plt.show()
+
 
